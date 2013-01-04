@@ -1,11 +1,11 @@
 { "name": "join-lines.mixin"
-, "version": "1.0"
+, "version": "1.1"
 , "description": "This mixin emulates "
 , "keywords": ["chocolat", "lines"]
 , "author": "Ricardo Mendes <rokusu@gmail.com>"
 , "homepage": "http://locks.io"
 , "repository": { "type": "git"
-                , "url": ""
+                , "url": "https://github.com/locks/join-lines.chocmixin"
                 }
 , "license": "MIT"
 }

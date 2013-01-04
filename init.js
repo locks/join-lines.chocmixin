@@ -1,10 +1,22 @@
 var util = require('util')
 
-Recipe.prototype.nextLineInRange = function (rng) {
-  line     = this.rangeOfLinesInRange(rng)
-  nextLine = this.rangeOfLinesInRange(new Range(line.location+line.length,0))
 
-  return nextLine;
+Recipe.prototype.nextLineRangeForRange = function (rng, callback) {
+  var line     = this.rangeOfLinesInRange(rng)
+  var nextLine = this.contentRangeOfLinesInRange(new Range(line.max(),0))
+
+  if (line.max() >= Document.current().length) return;
+  if (!nextLine.isValid())                     return;
+
+  return callback.apply(this, [nextLine])
+}
+
+Recipe.prototype.nextLineTextForRange = function (rng, callback) {
+  return this.nextLineRangeForRange(rng, function (rng_deep) {
+    var nextLineText = this.textInRange(rng_deep)
+
+    return callback.apply(this, [nextLineText, rng_deep])
+  })
 }
 
 String.prototype.endsWith = function (suffix) {
@@ -14,21 +26,20 @@ String.prototype.endsWith = function (suffix) {
 Hooks.addMenuItem("Text/Lines/Join Lines", "control-j", function () {
   Recipe.run(function (recipe) {
     recipe.eachLine(recipe.selection, function (line) {
-      next_line = recipe.nextLineInRange(line.conventionalRange)
 
-      recipe.eachLine(next_line, function (marker) {
-        return marker.text.trimLeft()
+      recipe.nextLineTextForRange(line.conventionalRange, function (text, rng) {
+        return recipe.replaceTextInRange(rng, text.trimLeft())
       })
 
-      newline = recipe.contentRangeOfLinesInRange(line.contentRange)
-      newline = new Range(newline.location+newline.length,1)
+      var newline = recipe.contentRangeOfLinesInRange(line.contentRange)
+      newline = new Range(newline.max(),1)
 
       if (line.text.endsWith(" "))
         recipe.deleteTextInRange(newline)
       else
         recipe.replaceTextInRange(newline, " ")
 
-      return undefined;
+      return undefined
     })
   })
 })
