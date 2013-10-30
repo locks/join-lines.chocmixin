@@ -23,7 +23,7 @@ String.prototype.endsWith = function (suffix) {
   return this.indexOf(suffix, this.length - suffix.length) !== -1;
 }
 
-Hooks.addMenuItem("Text/Lines/Join Lines", "control-j", function () {
+Hooks.addMenuItem("Text/Lines/Join Lines", "control-shift-j", function () {
   Recipe.run(function (recipe) {
     recipe.eachLine(recipe.selection, function (line) {
 
